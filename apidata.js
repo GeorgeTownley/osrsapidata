@@ -1,5 +1,32 @@
 const https = require("https");
 
+const skillNames = [
+  "Overall",
+  "Attack",
+  "Defence",
+  "Strength",
+  "Hitpoints",
+  "Ranged",
+  "Prayer",
+  "Magic",
+  "Cooking",
+  "Woodcutting",
+  "Fletching",
+  "Fishing",
+  "Firemaking",
+  "Crafting",
+  "Smithing",
+  "Mining",
+  "Herblore",
+  "Agility",
+  "Thieving",
+  "Slayer",
+  "Farming",
+  "Runecrafting",
+  "Hunter",
+  "Construction",
+];
+
 async function fetchPlayerData() {
   return new Promise((resolve, reject) => {
     const url =
