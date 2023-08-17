@@ -53,10 +53,10 @@ async function printPlayerInfo() {
     const playerData = await fetchPlayerData();
     const playerInfoArray = playerData.split("\n");
     console.log("Player Stats:");
-    playerInfoArray.forEach((info, index) => {
-      const [rank, level, experience] = info.split(",");
-      console.log(`Rank: ${rank}, Level: ${level}, Experience: ${experience}`);
-    });
+    for (let i = 0; i < skillNames.length; i++) {
+      const [rank, level, experience] = playerInfoArray[i].split(",");
+      console.log(`${skillNames[i]}: Level ${level} (${experience}exp)`);
+    }
   } catch (error) {
     console.error("Error fetching or printing player data:", error);
   }
