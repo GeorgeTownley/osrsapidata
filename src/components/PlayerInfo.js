@@ -1,13 +1,34 @@
-// In components/PlayerInfo.js
 import React, { useState, useEffect } from "react";
 
 const skillNames = [
-  // ... (your skillNames array)
+  "Overall",
+  "Attack",
+  "Defence",
+  "Strength",
+  "Hitpoints",
+  "Ranged",
+  "Prayer",
+  "Magic",
+  "Cooking",
+  "Woodcutting",
+  "Fletching",
+  "Fishing",
+  "Firemaking",
+  "Crafting",
+  "Smithing",
+  "Mining",
+  "Herblore",
+  "Agility",
+  "Thieving",
+  "Slayer",
+  "Farming",
+  "Runecrafting",
+  "Hunter",
+  "Construction",
 ];
 
 async function fetchPlayerData() {
-  const url =
-    "https://secure.runescape.com/m=hiscore_oldschool_seasonal/index_lite.ws?player=Unholy304";
+  const url = "/m=hiscore_oldschool_seasonal/index_lite.ws?player=Unholy304";
 
   const response = await fetch(url);
   const data = await response.text();
@@ -27,7 +48,11 @@ const PlayerInfo = () => {
           .slice(0, skillNames.length)
           .map((info, index) => {
             const [rank, level, experience] = info.split(",");
-            return `${skillNames[index]}: Level ${level} (${experience}exp)`;
+            return {
+              skill: skillNames[index],
+              level: level,
+              experience: experience,
+            };
           });
         setPlayerInfo(formattedData);
       } catch (err) {
@@ -46,7 +71,9 @@ const PlayerInfo = () => {
       ) : (
         <ul>
           {playerInfo.map((info, index) => (
-            <li key={index}>{info}</li>
+            <li key={index}>
+              {info.skill}: Level {info.level} ({info.experience}exp)
+            </li>
           ))}
         </ul>
       )}
