@@ -28,16 +28,16 @@ const SKILLS = [
 ];
 
 const fetchPlayerData = async (playerName) => {
-  const url = `/m=hiscore_oldschool_seasonal/index_lite.ws?player=${encodeURIComponent(
+  const url = `https://secure.runescape.com/m=hiscore_oldschool_seasonal/index_lite.ws?player=${encodeURIComponent(
     playerName
   )}`;
-
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to fetch player data for ${playerName}`);
     }
     const data = await response.text();
+    console.log(`Fetched Data for ${playerName}:`, data); // Debugging Point 1
     const parsedData = data.split("\n").map((skill) => skill.split(","));
     return parsedData;
   } catch (error) {
@@ -54,11 +54,17 @@ const PlayerInfo = ({ player1Name, player2Name }) => {
     async function fetchData() {
       const data1 = await fetchPlayerData(player1Name);
       const data2 = await fetchPlayerData(player2Name);
-      setPlayer1Stats(data1);
-      setPlayer2Stats(data2);
+      setPlayer1Stats(data1 || []); // Fallback to empty array if null is returned
+      setPlayer2Stats(data2 || []); // Same as above
     }
     fetchData();
   }, [player1Name, player2Name]);
+
+  console.log("Player1 Name:", player1Name); // Debugging Point 2
+  console.log("Player2 Name:", player2Name); // Debugging Point 2
+  console.log("Player1 Stats Length:", player1Stats.length); // Debugging Point 3
+  console.log("Player2 Stats Length:", player2Stats.length); // Debugging Point 3
+  console.log("Skills Length:", SKILLS.length); // Debugging Point 3
 
   if (
     !player1Stats ||
@@ -68,44 +74,8 @@ const PlayerInfo = ({ player1Name, player2Name }) => {
   ) {
     return <div>Loading...</div>;
   }
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>{player1Name}</th>
-          <th>Comparison</th>
-          <th>{player2Name}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {SKILLS.map((skill, index) => {
-          const [player1Exp] = player1Stats[index];
-          const [player2Exp] = player2Stats[index];
 
-          let comparison;
-          if (player1Exp > player2Exp) {
-            comparison = "<";
-          } else if (player1Exp < player2Exp) {
-            comparison = ">";
-          } else {
-            comparison = "=";
-          }
-
-          return (
-            <tr key={index}>
-              <td>
-                {skill}: {player1Stats[index][1]} ({player1Exp} exp)
-              </td>
-              <td>{comparison}</td>
-              <td>
-                {skill}: {player2Stats[index][1]} ({player2Exp} exp)
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
+  return <table>{/* ... (the rest of your rendering code) */}</table>;
 };
 
 export default PlayerInfo;
