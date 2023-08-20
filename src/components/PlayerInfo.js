@@ -28,16 +28,16 @@ const SKILLS = [
 ];
 
 const fetchPlayerData = async (playerName) => {
-  const url = `https://secure.runescape.com/m=hiscore_oldschool_seasonal/index_lite.ws?player=${encodeURIComponent(
+  const url = `http://localhost:3001/api/m=hiscore_oldschool_seasonal/index_lite.ws?player=${encodeURIComponent(
     playerName
   )}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
+      console.error("API Response Status:", response.status);
       throw new Error(`Failed to fetch player data for ${playerName}`);
     }
     const data = await response.text();
-    console.log(`Fetched Data for ${playerName}:`, data); // Debugging Point 1
     const parsedData = data.split("\n").map((skill) => skill.split(","));
     return parsedData;
   } catch (error) {
@@ -54,28 +54,27 @@ const PlayerInfo = ({ player1Name, player2Name }) => {
     async function fetchData() {
       const data1 = await fetchPlayerData(player1Name);
       const data2 = await fetchPlayerData(player2Name);
-      setPlayer1Stats(data1 || []); // Fallback to empty array if null is returned
-      setPlayer2Stats(data2 || []); // Same as above
+      setPlayer1Stats(data1 || []);
+      setPlayer2Stats(data2 || []);
     }
     fetchData();
   }, [player1Name, player2Name]);
 
-  console.log("Player1 Name:", player1Name); // Debugging Point 2
-  console.log("Player2 Name:", player2Name); // Debugging Point 2
-  console.log("Player1 Stats Length:", player1Stats.length); // Debugging Point 3
-  console.log("Player2 Stats Length:", player2Stats.length); // Debugging Point 3
-  console.log("Skills Length:", SKILLS.length); // Debugging Point 3
-
   if (
     !player1Stats ||
     !player2Stats ||
-    player1Stats.length !== SKILLS.length ||
-    player2Stats.length !== SKILLS.length
+    player1Stats.length === 0 ||
+    player2Stats.length === 0
   ) {
     return <div>Loading...</div>;
   }
 
-  return <table>{/* ... (the rest of your rendering code) */}</table>;
+  return (
+    <table>
+      <p>I should be showing if the fetch worked:</p>
+      <code>{JSON.stringify(player1Stats)}</code>
+    </table>
+  );
 };
 
 export default PlayerInfo;
