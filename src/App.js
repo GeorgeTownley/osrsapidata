@@ -1,5 +1,6 @@
 import React from "react";
 import PlayerInfo from "./components/PlayerInfo";
+import "./App.css";
 
 function App() {
   return (

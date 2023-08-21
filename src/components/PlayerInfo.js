@@ -69,10 +69,49 @@ const PlayerInfo = ({ player1Name, player2Name }) => {
     return <div>Loading...</div>;
   }
 
+  function comparisonSymbol(player1Experience, player2Experience) {
+    if (player1Experience > player2Experience) {
+      return { symbol: "<", color: "red" };
+    } else if (player1Experience < player2Experience) {
+      return { symbol: ">", color: "green" };
+    } else {
+      return { symbol: "=", color: "black" };
+    }
+  }
+
   return (
-    <table>
-      <p>I should be showing if the fetch worked:</p>
-      <code>{JSON.stringify(player1Stats)}</code>
+    <table className="player-comparison-table">
+      <thead>
+        <tr>
+          <th>{player1Name}</th>
+          <th>Comparison</th>
+          <th>{player2Name}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {SKILLS.map((skill, index) => {
+          const player1Level = player1Stats[index][1];
+          const player1Experience = parseInt(player1Stats[index][2], 10);
+          const player2Level = player2Stats[index][1];
+          const player2Experience = parseInt(player2Stats[index][2], 10);
+          const comparison = comparisonSymbol(
+            player1Experience,
+            player2Experience
+          );
+
+          return (
+            <tr key={skill}>
+              <td>
+                {skill} {player1Level} ({player1Experience})
+              </td>
+              <td style={{ color: comparison.color }}>{comparison.symbol}</td>
+              <td>
+                {skill} {player2Level} ({player2Experience})
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
     </table>
   );
 };
