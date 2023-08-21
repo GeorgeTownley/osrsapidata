@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const SKILLS = [
   "Overall",
@@ -46,30 +46,29 @@ const fetchPlayerData = async (playerName) => {
   }
 };
 
-const PlayerInfo = ({ player1Name, player2Name }) => {
+const PlayerInfo = () => {
+  const [player1Name, setPlayer1Name] = useState("");
+  const [player2Name, setPlayer2Name] = useState("");
   const [player1Stats, setPlayer1Stats] = useState([]);
   const [player2Stats, setPlayer2Stats] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      const data1 = await fetchPlayerData(player1Name);
-      const data2 = await fetchPlayerData(player2Name);
-      setPlayer1Stats(data1 || []);
-      setPlayer2Stats(data2 || []);
+  const fetchData = async () => {
+    setIsLoading(true);
+    const data1 = await fetchPlayerData(player1Name);
+    const data2 = await fetchPlayerData(player2Name);
+    setPlayer1Stats(data1 || []);
+    setPlayer2Stats(data2 || []);
+    setIsLoading(false);
+  };
+
+  const handleCompareClick = () => {
+    if (player1Name && player2Name) {
+      fetchData();
     }
-    fetchData();
-  }, [player1Name, player2Name]);
+  };
 
-  if (
-    !player1Stats ||
-    !player2Stats ||
-    player1Stats.length === 0 ||
-    player2Stats.length === 0
-  ) {
-    return <div>Loading...</div>;
-  }
-
-  function comparisonSymbol(player1Experience, player2Experience) {
+  const comparisonSymbol = (player1Experience, player2Experience) => {
     if (player1Experience > player2Experience) {
       return { symbol: "<", color: "red" };
     } else if (player1Experience < player2Experience) {
@@ -77,42 +76,69 @@ const PlayerInfo = ({ player1Name, player2Name }) => {
     } else {
       return { symbol: "=", color: "black" };
     }
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <table className="player-comparison-table">
-      <thead>
-        <tr>
-          <th>{player1Name}</th>
-          <th>Comparison</th>
-          <th>{player2Name}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {SKILLS.map((skill, index) => {
-          const player1Level = player1Stats[index][1];
-          const player1Experience = parseInt(player1Stats[index][2], 10);
-          const player2Level = player2Stats[index][1];
-          const player2Experience = parseInt(player2Stats[index][2], 10);
-          const comparison = comparisonSymbol(
-            player1Experience,
-            player2Experience
-          );
+    <>
+      <table className="player-comparison-table">
+        <thead>
+          <tr>
+            <th>
+              <input
+                value={player1Name}
+                onChange={(e) => setPlayer1Name(e.target.value)}
+                placeholder="Enter Player 1 Name"
+              />
+            </th>
+            <th>Comparison</th>
+            <th>
+              <input
+                value={player2Name}
+                onChange={(e) => setPlayer2Name(e.target.value)}
+                placeholder="Enter Player 2 Name"
+              />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {SKILLS.map((skill, index) => {
+            const player1Level = player1Stats[index]
+              ? player1Stats[index][1]
+              : 0;
+            const player1Experience = player1Stats[index]
+              ? parseInt(player1Stats[index][2], 10)
+              : 0;
+            const player2Level = player2Stats[index]
+              ? player2Stats[index][1]
+              : 0;
+            const player2Experience = player2Stats[index]
+              ? parseInt(player2Stats[index][2], 10)
+              : 0;
+            const comparison = comparisonSymbol(
+              player1Experience,
+              player2Experience
+            );
 
-          return (
-            <tr key={skill}>
-              <td>
-                {skill} {player1Level} ({player1Experience})
-              </td>
-              <td style={{ color: comparison.color }}>{comparison.symbol}</td>
-              <td>
-                {skill} {player2Level} ({player2Experience})
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+            return (
+              <tr key={skill}>
+                <td>
+                  {skill} {player1Level} ({player1Experience})
+                </td>
+                <td style={{ color: comparison.color }}>{comparison.symbol}</td>
+                <td>
+                  {skill} {player2Level} ({player2Experience})
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <button onClick={handleCompareClick}>Compare</button>
+    </>
   );
 };
 
